@@ -2,21 +2,36 @@
 
 ## How to build
 
-- Install .NET Runtime
-  - https://aka.ms/dotnet-core-applaunch?missing_runtime=true&arch=x64&rid=win-x64&os=win10&apphost_version=10.0.5
-
 - dotnet new console -n ks
 - cd ks
 - copy ~/Program.cs .
 - dotnet run
 
-### How to relase build ks
+### How to release build ks
 
 - dotnet build -c Release
   - Copy following 3 files in bin\Release\netXX.X\ , and Execute ks.exe in Command Prompt
     - ks.exe
     - ks.dll
     - ks.runtimeconfig.json
+
+
+## How to download, install, and run ks
+
+- Install `.NET Runtime` in your Windows
+  - [.NET Runtime 10.0.5](https://aka.ms/dotnet-core-applaunch?missing_runtime=true&arch=x64&rid=win-x64&os=win10&apphost_version=10.0.5)
+
+- Download `ks.zip`
+  - [ks.zip](https://raw.githubusercontent.com/dotnsf/ks/refs/heads/main/release/ks.zip)
+- Unzip `ks.zip`, and put following 3 files in same **PATH-specified** folder.
+  - `ks.exe`
+  - `ks.dll`
+  - `ks.runtimeconfig.json`
+
+- Run `ks.exe` from your Command Prompt
+  - `> ks`
+  - `> ks (filename)`
+
 
 ## How to use ks
 
