@@ -1,4 +1,5 @@
 //. Program.cs 
+//. 
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -535,7 +536,6 @@ internal static class Program
 
     private static string _status = "";
     private static string _filePath = "sheet.csv";
-    private static string _commandPrefill = ":"; // command line initial text
 
     // Visual selection
     private static bool _hasSelection = false;
@@ -553,7 +553,7 @@ internal static class Program
     private const int ColHeaderH = 2;
     private const int StatusH = 2;
 
-    public static void Main()
+    public static void Main(string[] args)
     {
         Console.OutputEncoding = Encoding.UTF8;
         Console.InputEncoding = Encoding.UTF8;
@@ -561,14 +561,40 @@ internal static class Program
         WinConsole.TryEnableVT();
 
         Console.Write(Ansi.HideCursor);
-        try { Run(); }
+        string? initialPath = null;
+        if (args != null && args.Length > 0 && !string.IsNullOrWhiteSpace(args[0]))
+        {
+            initialPath = args[0].Trim('"');
+        }
+        try { Run(initialPath); }
         finally { Console.Write(Ansi.Reset + Ansi.ShowCursor); }
     }
 
-    private static void Run()
+    private static void Run(string? initialPath)
     {
         var sheet = new Sheet(rows: 500, cols: 100, defaultWidth: 10);
         var eval = new Evaluator(sheet);
+
+        if (!string.IsNullOrWhiteSpace(initialPath))
+        {
+            _filePath = initialPath;
+            try
+            {
+                if (File.Exists(initialPath))
+                {
+                    sheet.LoadCsv(initialPath);
+                    _status = $"Loaded: {initialPath}";
+                }
+                else
+                {
+                    _status = $"File not found: {initialPath}";
+                }
+            }
+            catch (Exception ex)
+            {
+                _status = $"Load error: {ex.Message}";
+            }
+        }
 
         bool running = true;
         while (running)
@@ -740,8 +766,7 @@ internal static class Program
     // ===================== Command mode =====================
     private static bool HandleCommand(Sheet sheet)
     {
-        string? cmd = ReadLineAtBottom("", _commandPrefill);
-        _commandPrefill = ":";
+        string? cmd = ReadLineAtBottom(":", "");
         _mode = Mode.Normal;
 
         if (cmd == null) { _status = ""; return true; }
