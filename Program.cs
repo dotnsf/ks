@@ -1,4 +1,4 @@
-//. 
+//. Program.cs 
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -535,6 +535,7 @@ internal static class Program
 
     private static string _status = "";
     private static string _filePath = "sheet.csv";
+    private static string _commandPrefill = ":"; // command line initial text
 
     // Visual selection
     private static bool _hasSelection = false;
@@ -622,7 +623,7 @@ internal static class Program
         }
         _awaitingG = false;
 
-        if ((key.KeyChar == ':' || key.KeyChar == '/') && key.Modifiers == 0)
+        if (key.KeyChar == ':' && key.Modifiers == 0)
         {
             _mode = Mode.Command;
             return true;
@@ -739,12 +740,12 @@ internal static class Program
     // ===================== Command mode =====================
     private static bool HandleCommand(Sheet sheet)
     {
-        string? cmd = ReadLineAtBottom("", ":");
+        string? cmd = ReadLineAtBottom("", _commandPrefill);
+        _commandPrefill = ":";
         _mode = Mode.Normal;
 
         if (cmd == null) { _status = ""; return true; }
         cmd = cmd.Trim();
-        if (cmd.StartsWith(":", StringComparison.Ordinal)) cmd = cmd.Substring(1).TrimStart();
         if (cmd.Length == 0) { _status = ""; return true; }
 
         var parts = SplitArgs(cmd);
