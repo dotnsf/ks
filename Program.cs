@@ -649,7 +649,7 @@ internal static class Program
         }
         _awaitingG = false;
 
-        if (key.KeyChar == ':' && key.Modifiers == 0)
+        if (( key.KeyChar == ':' || key.KeyChar == '/' ) && key.Modifiers == 0)
         {
             _mode = Mode.Command;
             return true;
@@ -676,6 +676,14 @@ internal static class Program
             EditCellSingleLine(sheet, eval);
             return true;
         }
+        
+        /*
+        if (key.KeyChar == 'w' && key.Modifiers == 0)
+        {
+            EditCellSingleLine(sheet, eval, true);
+            return true;
+        }
+        */
 
         if (key.KeyChar == 'y' && key.Modifiers == 0)
         {
@@ -766,7 +774,7 @@ internal static class Program
     // ===================== Command mode =====================
     private static bool HandleCommand(Sheet sheet)
     {
-        string? cmd = ReadLineAtBottom(":", "");
+        string? cmd = ReadLineAtBottom(":", "");  //. この ":" がデフォルト状態を指示している？
         _mode = Mode.Normal;
 
         if (cmd == null) { _status = ""; return true; }
@@ -1198,9 +1206,11 @@ internal static class Program
             if (text.Length > w - 1)
                 text = text.Substring(text.Length - (w - 1));
             Console.Write(text);
+            Console.Out.Flush();
         }
 
         Redraw();
+        Console.Write(Ansi.ShowCursor);
 
         while (true)
         {
@@ -1209,11 +1219,13 @@ internal static class Program
             if (k.Key == ConsoleKey.Escape)
             {
                 Console.Write(Ansi.Move(h, 1) + Ansi.ClearLine);
+                Console.Write(Ansi.HideCursor);
                 return null;
             }
             if (k.Key == ConsoleKey.Enter)
             {
                 Console.Write(Ansi.Move(h, 1) + Ansi.ClearLine);
+                Console.Write(Ansi.HideCursor);
                 return sb.ToString();
             }
             if (k.Key == ConsoleKey.Backspace)
